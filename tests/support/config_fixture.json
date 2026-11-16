@@ -1,0 +1,128 @@
+{
+  "schema_version": 3,
+  "mode": "vnstock",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "sample_seed": 20261026,
+  "sample_frames": 120,
+  "sample_notice": "Dữ liệu simulated; không phải dữ liệu SSI FastConnect, không dùng làm kết quả kiểm chứng trong báo cáo.",
+  "market": {
+    "exchange": "HOSE",
+    "continuous_sessions": [
+      [
+        "09:15",
+        "11:30"
+      ],
+      [
+        "13:00",
+        "14:30"
+      ]
+    ],
+    "lot_size": 100,
+    "tick_bands": [
+      [
+        10000,
+        10
+      ],
+      [
+        50000,
+        50
+      ],
+      [
+        null,
+        100
+      ]
+    ],
+    "tick_reference": "mid",
+    "status": "Quy tắc thị trường là cấu hình nghiên cứu; hợp đồng SSI, tên trường, đơn vị và cờ phiên chưa được xác nhận từ tài liệu/payload chính thức. Không bật Live.",
+    "max_round_lot_order_shares": 500000,
+    "auction_sessions": [
+      [
+        "09:00",
+        "09:15"
+      ],
+      [
+        "14:30",
+        "14:45"
+      ]
+    ],
+    "odd_lot_book": "separate; not merged into round-lot book"
+  },
+  "lqs_weights": {
+    "spread_bps": 0.25,
+    "depth_min_vnd": 0.25,
+    "execution_cost_bps": 0.25,
+    "amihud_5m": 0.15,
+    "two_sided_ratio": 0.1
+  },
+  "obi_level_weights": [
+    1.0,
+    0.5,
+    0.3333333333333333
+  ],
+  "notional_vnd": 1000000000,
+  "incomplete_fill_penalty_bps": 100,
+  "demo_alerts": {
+    "status": "Chỉ để minh họa UI; không phải ngưỡng P95/P99 hiệu chuẩn từ dữ liệu thị trường.",
+    "thin_fill_ratio_threshold": 1.0,
+    "wide_spread_bps": 25.0,
+    "thin_depth_vnd": 500000000,
+    "pressure_obi": 0.5,
+    "persistence_ratio": 0.6,
+    "critical_fill_ratio": 0.5,
+    "severity_rationale": "Ngưỡng 50% chỉ minh họa phân cấp theo phần quy mô không hấp thụ được; cần hiệu chỉnh và kiểm chứng trên dữ liệu huấn luyện thật.",
+    "pressure_ofi_normalized": 0.1,
+    "pressure_note": "Chỉ báo chính là OFI xấp xỉ giữa snapshot; ngưỡng normalized 0.10 và persistence 0.60 chỉ minh họa, chưa hiệu chuẩn."
+  },
+  "live_thresholds": null,
+  "quality": {
+    "stale_seconds": 60,
+    "watchdog_seconds": 60,
+    "history_gap_seconds": 90
+  },
+  "rest_max_requests_per_second": 5,
+  "sensitivity_analysis_status": "implemented_simulated_profiles; chưa kiểm chứng độ nhạy trên dữ liệu thật",
+  "lqs_profiles": {
+    "baseline": {
+      "label": "Gốc · Spread 25%",
+      "weights": {
+        "spread_bps": 0.25,
+        "depth_min_vnd": 0.25,
+        "execution_cost_bps": 0.25,
+        "amihud_5m": 0.15,
+        "two_sided_ratio": 0.1
+      },
+      "note": "Giữ giả định gốc để đối chiếu; chưa hiệu chuẩn từ dữ liệu thật."
+    },
+    "depth_cost": {
+      "label": "Độ sâu & chi phí · Spread 10%",
+      "weights": {
+        "spread_bps": 0.1,
+        "depth_min_vnd": 0.35,
+        "execution_cost_bps": 0.3,
+        "amihud_5m": 0.15,
+        "two_sided_ratio": 0.1
+      },
+      "note": "Kịch bản độ nhạy định trước, chưa chứng minh tốt hơn. Không tự đổi trọng số vì giả thuyết spread một tick chưa được kiểm chứng."
+    }
+  },
+  "research": {
+    "event_horizons_seconds": [
+      5,
+      15,
+      30
+    ],
+    "control_horizon_seconds": 60,
+    "forecast_status": "unavailable_minute_snapshots",
+    "resilience_status": "planned",
+    "effective_spread_status": "unavailable_no_aligned_trade_events",
+    "pilot_one_tick_hypothesis": "unverified",
+    "vn30_membership_status": "unverified_at_collection_date"
+  },
+  "vnstock": {
+    "source": "VCI",
+    "refresh_cooldown_seconds": 60,
+    "snapshot_stale_seconds": 120,
+    "mode": "read_only_rest_snapshot",
+    "ssi_sessions": 0
+  }
+}

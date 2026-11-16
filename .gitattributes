@@ -1,0 +1,3 @@
+# Preserve bundled build hashes and original design reference checksums.
+src/app/static/** -text
+design_reference/** -text
