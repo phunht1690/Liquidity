@@ -1,4 +1,5 @@
 """Journal actual live observations, with no inferred alert onset or gap filling."""
+from src.data.sqlite_connection import sqlite_session
 from hashlib import sha256
 from pathlib import Path
 from threading import RLock
@@ -18,7 +19,7 @@ def attach_history(product,database=None,*,retention_days=30):
     key=sha256(json.dumps([product['universe'],product['group'],product['notional_vnd'],product['alert_rules']['spread_threshold_bps']]).encode()).hexdigest()[:24]
     with _lock:
         database.parent.mkdir(parents=True,exist_ok=True)
-        with sqlite3.connect(database,timeout=4) as db:
+        with sqlite_session(database,timeout=4) as db:
             db.execute('CREATE TABLE IF NOT EXISTS alert_runs(id INTEGER PRIMARY KEY,scope TEXT,day TEXT,symbol TEXT,kind TEXT,first_at TEXT,last_at TEXT,resolved_at TEXT)')
             db.execute('CREATE INDEX IF NOT EXISTS alert_scope_day ON alert_runs(scope,day,symbol,kind,last_at)')
             if live:

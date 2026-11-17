@@ -1,4 +1,5 @@
 """Use already-cached session candles; no extra REST call in a product request."""
+from src.data.sqlite_connection import sqlite_session
 from hashlib import sha256
 import json,sqlite3
 from src.data.ssi_feed import PROJECT,event_time,reference_for_day
@@ -11,7 +12,7 @@ def enrich_candle_statistics(product,database=None):
     targets={r['symbol']:r for r in rows}
     if selected not in targets:targets[selected]=product['selected']
     try:
-        with sqlite3.connect(f'file:{path.as_posix()}?mode=ro',uri=True,timeout=2) as db:
+        with sqlite_session(f'file:{path.as_posix()}?mode=ro',uri=True,timeout=2) as db:
             cached=db.execute("SELECT payload FROM chart_cache WHERE json_extract(payload,'$.range')='session' AND json_extract(payload,'$.timeframe')='5m' ORDER BY saved_at").fetchall()
         for (text,) in cached:
             data=json.loads(text);r=targets.get(data.get('symbol'));bars=data.get('bars') or []

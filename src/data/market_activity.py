@@ -1,4 +1,5 @@
 """Small asynchronous cache of SSI matched and negotiated market totals."""
+from src.data.sqlite_connection import sqlite_session
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
@@ -32,7 +33,7 @@ class MarketActivity:
         self.factory=factory;self.client=None;self.lock=RLock();self.stop=Event();self.queue=Queue();self.pending=set();self.checked={};self.cache={};self.retry_at=0;self.thread=None
         if self.database.is_file():
             try:
-                with sqlite3.connect(f'file:{self.database.as_posix()}?mode=ro',uri=True) as db:
+                with sqlite_session(f'file:{self.database.as_posix()}?mode=ro',uri=True) as db:
                     self.cache={key:json.loads(payload) for key,payload in db.execute('SELECT scope,payload FROM summaries')}
             except (OSError,sqlite3.Error,ValueError):pass
 
@@ -55,7 +56,7 @@ class MarketActivity:
                 result=normalize(self.client._get('/api/v3/data/indexSummary',{kind:scope}),scope,datetime.now(VN))
                 if result:
                     self.database.parent.mkdir(parents=True,exist_ok=True)
-                    with sqlite3.connect(self.database,timeout=3) as db:
+                    with sqlite_session(self.database,timeout=3) as db:
                         db.execute('CREATE TABLE IF NOT EXISTS summaries(scope TEXT PRIMARY KEY,payload TEXT NOT NULL)')
                         db.execute('INSERT OR REPLACE INTO summaries VALUES(?,?)',(scope,json.dumps(result,allow_nan=False)))
                     with self.lock:self.cache[scope]=result

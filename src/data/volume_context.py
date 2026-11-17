@@ -1,4 +1,5 @@
 """Comparable actual volume, from completed provider candles already on disk."""
+from src.data.sqlite_connection import sqlite_session
 from datetime import timedelta
 from pathlib import Path
 from statistics import mean
@@ -18,7 +19,7 @@ def volume_context(row,now,database=None):
     if not day or not now or day>now.date().isoformat() or not path.is_file():return result
     result['day']=day
     try:
-        with sqlite3.connect(f'file:{path.as_posix()}?mode=ro',uri=True,timeout=2) as db:
+        with sqlite_session(f'file:{path.as_posix()}?mode=ro',uri=True,timeout=2) as db:
             if daily:
                 result.update(basis='daily',volume_shares=numeric(row.get('volume_shares')))
                 rows=db.execute('''SELECT p.day,p.volume FROM price_bars p JOIN price_days d

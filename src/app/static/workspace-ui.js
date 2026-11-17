@@ -26,7 +26,7 @@
     const name=list.dataset.workspaceTabs,tabs=[...list.querySelectorAll('[role=tab]')];
     groups.set(name,{tabs,value:null});
     for(const tab of tabs){
-      tab.addEventListener('click',()=>select(name,tab.dataset.tabValue,{animate:true,navigate:true}));
+      tab.addEventListener('click',event=>{if(tab.dataset.tabHash)event?.preventDefault();select(name,tab.dataset.tabValue,{animate:true,navigate:true});});
       tab.addEventListener('keydown',event=>{
         const index=tabs.indexOf(tab);
         const next=event.key==='ArrowRight'?(index+1)%tabs.length:event.key==='ArrowLeft'?(index+tabs.length-1)%tabs.length:event.key==='Home'?0:event.key==='End'?tabs.length-1:null;
@@ -39,6 +39,12 @@
   window.lopmWorkspaceUI={
     selectMarket:(value,options)=>select('market',value,options),
     selectBook:(value,options)=>select('book',value,options),
+    syncOverviewRoute(hash,options){
+      const routes={stock:'stock',chart:'stock',book:'book',cost:'book',ranking:'ranking'};
+      if(hash==='overview'||hash==='')select('overview',groups.get('overview')?.value||'stock',options);
+      else if(routes[hash])select('overview',routes[hash],options);
+    },
+    overviewView:()=>groups.get('overview')?.value||'stock',
     syncDataRoute(hash){
       if(hash==='how-it-works')select('data','guide');
       else if(['data','methods','data-status','data-fields','data-off-hours'].includes(hash))select('data','status');

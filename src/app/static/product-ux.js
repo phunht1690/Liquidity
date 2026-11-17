@@ -15,22 +15,17 @@
     return (payload?.ranking||[]).filter(r=>(!only||watch.has(r.symbol))&&(!term||`${r.symbol} ${r.name||''} ${r.market_code||''}`.toLocaleUpperCase('vi-VN').includes(term)));
   }
   function filtered(payload){const rows=baseFiltered(payload);return window.lopmLiquidityBrief?.filterRows(payload,rows)||rows;}
-  function priceCaption(row){
-    if(row?.price_basis==='ssi_daily_close')return `Đóng cửa ${(row.price_asof_date||'').split('-').reverse().join('/')} · SSI tổng hợp ngày`;
-    if(row?.price_basis==='ssi_ohlc_daily')return `Đóng cửa ${(row.price_asof_date||'').split('-').reverse().join('/')} · nến ngày SSI`;
-    if(row?.price_basis==='ssi_ohlc_bar')return `Đóng nến ${dateTime(row.price_asof_bar)} · SSI`;
-    return row?.trade_time?`Khớp lúc ${sourceTime(row.trade_time)} · SSI`:'';
+  function priceCaption(row,{source=true}={}){
+    if(row?.price_basis==='ssi_daily_close')return `Đóng cửa ${(row.price_asof_date||'').split('-').reverse().join('/')} · ${source?'SSI ':''}tổng hợp ngày`;
+    if(row?.price_basis==='ssi_ohlc_daily')return `Đóng cửa ${(row.price_asof_date||'').split('-').reverse().join('/')} · nến ngày${source?' SSI':''}`;
+    if(row?.price_basis==='ssi_ohlc_bar')return `Đóng nến ${dateTime(row.price_asof_bar)}${source?' · SSI':''}`;
+    return row?.trade_time?`Khớp lúc ${sourceTime(row.trade_time)}${source?' · SSI':''}`:'';
   }
   function paintFreshness(){
     if(typeof state==='undefined'||!state)return;
     const status=window.lopmDashboardModel.connection(state,backendOK);
     document.body.dataset.connection=status.mode==='reconnecting'?'cached':'connected';
     set('connection-label',status.mode==='saved'?'Ảnh đã lưu':status.label);set('auto-update-state',status.automatic);
-    const r=state.selected||{},caption=priceCaption(r);
-    set('last-updated',caption?`Giá ${r.symbol||''} · ${caption.replace(/^Khớp lúc /,'').replace(/ · SSI(?: tổng hợp ngày)?$/,'')}`:'Giá _');
-    byId('last-updated').title=caption||'Chưa có thời điểm giá.';
-    set('book-updated',state.analysis?.asof?`Sổ ${dateTime(state.analysis.asof)}`:'Sổ _');
-    byId('book-updated').title='Thời điểm ảnh sổ dùng để tính chênh giá, lượng chờ và mức đáp ứng.';
     const banner=byId('reference-banner');banner.hidden=status.mode!=='reconnecting';
     if(!banner.hidden)set('reference-banner',lastSuccess?`Đang nối lại cập nhật. Giữ bản đã nhận; đồng bộ gần nhất ${dateTime(new Date(lastSuccess).toISOString())}.`:'Đang nối lại nguồn dữ liệu. Ứng dụng sẽ tự thử lại.');
     byId('auto-update-state').title=lastSuccess?`Đồng bộ với ứng dụng lúc ${dateTime(new Date(lastSuccess).toISOString())}. Tự nhận dữ liệu mới khi có.`:'Ứng dụng sẽ tự nhận dữ liệu mới và tự thử lại khi mất kết nối.';
@@ -45,12 +40,13 @@
   }
   function renderExtra(payload){
     const r=payload.selected,d=r.daily_statistics||{};
+    set('guide-source-symbol',r.symbol||'_');
     const day=r.statistics_day||r.turnover_day||d.day||r.trading_date;
     set('daily-stats-caption',day?`Thống kê phiên ${day.split('-').reverse().join('/')}`:'Thống kê phiên gần nhất');
     set('daily-turnover',r.turnover_basis==='ssi_daily_summary'&&valid(r.turnover_vnd)?money(r.turnover_vnd)+' đồng':'_');
     set('daily-open',valid(r.open_price_vnd)?fmt(r.open_price_vnd,0)+' đ':'_');
     set('daily-range',valid(r.low_price_vnd)&&valid(r.high_price_vnd)?`${fmt(r.low_price_vnd,0)} – ${fmt(r.high_price_vnd,0)} đ`:'_');
-    set('daily-stat-source',d.day?`SSI tổng hợp ngày · nhận ${dateTime(d.received_at)}. Giá trị khớp là số liệu nguồn cung cấp.`:r.statistics_source==='ssi_ohlc_daily'?`Giá và khối lượng: nến ngày SSI · nhận ${dateTime(r.statistics_received_at)}. Giá trị khớp chỉ hiện khi có số liệu tổng hợp ngày.`:'Dữ liệu SSI; ô chưa có số liệu được giữ “_”.');
+    set('daily-stat-source',d.day?`SSI tổng hợp ngày · phiên ${d.day.split('-').reverse().join('/')} · nhận ${dateTime(d.received_at)}. Giá trị khớp do SSI cung cấp.`:r.statistics_source==='ssi_ohlc_daily'?`Nến ngày SSI · phiên ${(day||'').split('-').reverse().join('/')||'_'} · nhận ${dateTime(r.statistics_received_at)}. Giá trị khớp dùng số liệu tổng hợp ngày khi có.`:`Nguồn: SSI${day?` · phiên ${day.split('-').reverse().join('/')}`:''}.`);
     scopeHint(payload);
     const trades=payload.recent_trades||[];
     set('trade-history-count',fmt(trades.length,0));
@@ -68,6 +64,7 @@
   }
   function clear(){
     window.lopmLiquidityExtras?.clear();
+    set('guide-source-symbol','_');
     for(const id of ['daily-turnover','daily-open','daily-range'])set(id,'_');
     for(const id of ['daily-stat-source','scope-data-note','cost-sizing-note'])set(id,'');
     set('daily-stats-caption','Thống kê phiên gần nhất');set('trade-history-caption','Đang đọc giao dịch của mã đã chọn.');set('trade-history-count','_');

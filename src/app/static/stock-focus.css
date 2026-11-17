@@ -1,0 +1,105 @@
+/* Put the price chart directly after issuer identity and one session row. */
+#overview-view{gap:0}
+.stock-accessible-heading{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+#stock-overview .company-hero{min-height:260px;padding:18px 22px;gap:8px 20px;margin-bottom:14px}
+#stock-overview .company-hero .company-logo-card{width:100px;height:48px;flex-basis:100px;padding:8px 10px}
+#stock-overview .company-brand-row{gap:12px}
+#stock-overview .company-meta-actions{margin-top:4px}
+#stock-overview .company-details-toggle{min-height:24px;font-size:12px}
+#stock-overview .company-details .company-location{margin:0 0 6px;font-size:12px;line-height:1.6}
+#stock-overview .company-hero .product-price{gap:3px 12px;padding-top:9px}
+#stock-overview .company-hero .product-price strong{font-size:28px}
+#stock-overview .company-hero .product-price .price-limit-line{margin-top:4px}
+#stock-overview .company-hero .price-reference-day{font-size:11px;margin-bottom:4px}
+#stock-overview .company-hero .price-limit-chip{gap:2px;padding:5px 8px}
+#stock-overview .company-hero .price-limit-chip>span{font-size:11px}
+#stock-overview .company-hero .price-limit-chip>b{font-size:12px}
+
+#main-content .stock-session-stats{display:block;margin:0 0 18px;padding:0 0 14px;border-bottom:1px solid var(--border)}
+#main-content .stock-session-stats .stock-stats-header{margin-bottom:8px}
+#main-content .stock-session-stats #daily-stats-caption{font-size:11px;line-height:1.6;color:var(--muted)}
+#main-content .stock-session-stats>dl{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr) minmax(0,.9fr) minmax(0,1.25fr);gap:14px;margin:0}
+#main-content .stock-session-stats>dl>div{min-width:0;padding-right:10px;border-right:1px solid var(--border)}
+#main-content .stock-session-stats>dl>div:last-child{border:0;padding-right:0}
+#main-content .stock-session-stats dt{font-size:12px;line-height:1.6;min-height:32px;margin:0;color:var(--muted)}
+#main-content .stock-session-stats dd{font-size:18px;line-height:1.5;font-weight:600;margin:2px 0 0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#main-content .stock-session-stats #volume-ratio{font-size:20px;font-weight:600}
+#main-content .stock-session-stats #volume-context-summary{display:block;margin-top:3px;font-size:11px;line-height:1.6;color:var(--muted)}
+#stock-overview #telemetry-panel{margin-top:0;margin-bottom:16px}
+#telemetry-panel .chart-heading-meta{gap:4px 12px}
+#telemetry-panel .chart-company-chip{gap:10px}
+
+#price-reference-day[hidden]{display:none!important}
+.volume-details-toggle{display:inline-flex;align-items:center;gap:7px;min-height:28px;padding:0 2px;background:transparent;color:var(--text);font:inherit;border:0;border-bottom:1px dashed var(--muted);border-radius:3px;cursor:pointer}
+.volume-details-toggle:hover{color:var(--cyan);border-bottom-color:var(--cyan)}
+.volume-details-toggle:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.volume-detail-arrow{font-size:14px;color:var(--muted);font-weight:400}
+.volume-comparison-popover{display:none;position:fixed;inset:auto;margin:0;left:16px;top:16px;width:360px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);overflow:auto;padding:16px;border:1px solid var(--border);border-radius:9px;background:var(--panel);color:var(--text);box-shadow:0 12px 40px #0005;z-index:100}
+.volume-comparison-popover:popover-open{display:block;animation:volume-popover-in .14s ease-out}
+.volume-comparison-popover.is-open{display:block;animation:volume-popover-in .14s ease-out}
+.volume-popover-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.volume-popover-heading h3{font-size:15px;font-weight:600;line-height:1.5;margin:0}
+.volume-popover-close{min-width:32px;min-height:32px!important;font-size:18px!important;padding:3px 8px!important}
+.volume-comparison-popover dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0 0 12px}
+.volume-comparison-popover dt{font-size:12px;line-height:1.6;color:var(--muted)}
+.volume-comparison-popover dd{font-size:18px;font-weight:600;line-height:1.6;font-variant-numeric:tabular-nums;margin:4px 0 0}
+.volume-comparison-popover :is(small,#volume-context-basis){display:block;color:var(--muted);font-size:12px;line-height:1.75}
+.volume-comparison-popover .data-inline-link{display:inline-block;margin-top:12px;font-size:12px}
+#stock-overview .stock-foreign-card{padding:0;margin:0;min-height:0;border-radius:7px}
+#stock-overview .stock-foreign-card>summary{display:flex;align-items:center;gap:18px;min-height:72px;padding:14px 16px;color:var(--text)}
+.foreign-card-heading{display:flex;flex-direction:column;gap:4px;min-width:0;margin-right:auto}
+.foreign-card-heading>strong{font-size:14px;font-weight:600;line-height:1.6;color:var(--text)}
+.foreign-card-heading>small{font-size:12px;color:var(--muted);line-height:1.6}
+.foreign-net-summary{display:flex;align-items:baseline;gap:12px;white-space:nowrap}
+.foreign-net-summary>span,.foreign-detail-label{font-size:12px;color:var(--muted)}
+.foreign-net-summary #foreign-net{font-size:21px;line-height:1.5;font-variant-numeric:tabular-nums;font-weight:600;color:var(--text)}
+.foreign-net-summary #foreign-net.foreign-net-positive{color:var(--chart-up)}
+.foreign-net-summary #foreign-net.foreign-net-negative{color:var(--chart-down)}
+.foreign-detail-body{padding:0 16px 16px}
+.foreign-detail-body>p{font-size:12px;line-height:1.7;color:var(--muted);margin:0 0 12px}
+.foreign-detail-body dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0}
+.foreign-detail-body dt{font-size:12px;line-height:1.6;color:var(--muted)}
+.foreign-detail-body dd{font-size:16px;line-height:1.6;color:var(--text);margin:4px 0 0;font-variant-numeric:tabular-nums}
+#stock-overview .stock-foreign-card>summary:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:7px}
+#ranking-panel #liquidity-summary{margin:2px 0 18px;padding:16px;border-radius:7px}
+#ranking-panel .brief-heading h2{font-size:16px}
+#ranking-panel .brief-kpis{gap:10px;margin:12px 0}
+#ranking-panel .brief-kpi{min-height:120px;padding:13px;grid-template-rows:32px 34px auto;gap:4px}
+#ranking-panel .brief-kpi>span{font-size:12px;line-height:1.5;min-height:0}
+#ranking-panel .brief-kpi>strong{font-size:26px;line-height:1.3}
+#ranking-panel .brief-kpi>small{font-size:12px;line-height:1.6}
+#ranking-panel .brief-basis{font-size:12px;line-height:1.7}
+#guide-example .guide-stock-context{border-top:1px solid var(--border);padding-top:12px;margin-top:12px}
+#guide-example .guide-stock-context>b{display:block;font-size:12px;line-height:1.7;color:var(--text)}
+#guide-example .guide-stock-context>small{display:block;font-size:12px;line-height:1.75;color:var(--muted);margin-top:6px}
+#book-selected-symbol{color:var(--cyan);font-size:.8em;margin-left:5px;font-weight:600}
+#book-liquidity-kpis{margin-top:0;margin-bottom:20px}
+#book-liquidity-kpis article{min-height:142px;padding:15px}
+#book-liquidity-kpis article>span{min-height:36px}
+@media(max-width:1000px) and (min-width:768px){
+  #stock-overview .company-hero{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+  #main-content .stock-session-stats dd{font-size:16px}
+}
+@media(max-width:767px){
+  #stock-overview .company-hero{min-height:0;padding:16px 16px 28px;gap:8px;margin-bottom:12px}
+  #stock-overview .company-hero .company-logo-card{width:86px;height:44px;flex-basis:86px;padding:7px 9px}
+  #stock-overview .company-hero .product-price{gap:3px 10px}
+  #stock-overview .company-hero .product-price strong{font-size:27px}
+  #stock-overview .company-hero .price-limit-chip{padding:5px 7px}
+  #stock-overview .company-hero .company-photo-source{top:auto;bottom:5px;left:auto;right:8px;max-width:calc(100% - 28px);font-size:9px;padding:2px 6px}
+  #main-content .stock-session-stats>dl{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px}
+  #main-content .stock-session-stats>dl>div:nth-child(2){border:0;padding-right:0}
+  #main-content .stock-session-stats dt{min-height:0;font-size:12px}
+  #main-content .stock-session-stats dd{font-size:17px}
+  .volume-details-toggle{min-height:32px}
+  #stock-overview .stock-foreign-card>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;padding:13px 14px}
+  .foreign-card-heading{grid-column:1/-1;margin-right:0}.foreign-net-summary{gap:8px}.foreign-detail-label{display:none}
+  .stock-foreign-card>summary::after{grid-column:2;grid-row:2}
+  .foreign-detail-body dl{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #ranking-panel #liquidity-summary{padding:12px}
+  #ranking-panel .brief-kpi{padding:11px;min-height:126px}
+  #ranking-panel .brief-kpi>strong{font-size:24px}
+}
+@keyframes volume-popover-in{from{opacity:.45;transform:translateY(3px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.volume-comparison-popover{animation:none!important}}
+@media print{.volume-comparison-popover{display:none!important}.volume-details-toggle{border:0}.stock-foreign-card{break-inside:avoid}}

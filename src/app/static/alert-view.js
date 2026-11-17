@@ -23,19 +23,19 @@
     return group;
   }
   function detail(item,row){
-    const articles=[];
+    const articles=[];let observation=null;
     if(item.observation){
-      const o=item.observation,section=node('article','alert-observation');
+      const o=item.observation,section=node('details','alert-observation');
       const seconds=Math.max(0,Number(o.duration_seconds)||0);
-      section.append(node('h3','','Khoảng đã quan sát'),node('p','',`Bắt đầu ghi nhận: ${dateTime(o.first_at)}`),node('p','',`Cập nhật trong phiên: ${dateTime(o.last_at)}`),node('p','',`Đã theo dõi ${seconds<60?fmt(seconds,0)+' giây':fmt(seconds/60,1)+' phút'}. Thời điểm bắt đầu là lúc ứng dụng nhìn thấy điều kiện.`));
-      articles.push(section);
+      section.append(node('summary','','Thời gian đã ghi nhận'),node('p','',`Bắt đầu quan sát: ${dateTime(o.first_at)}`),node('p','',`Cập nhật trong phiên: ${dateTime(o.last_at)}`),node('p','',`Đã theo dõi ${seconds<60?fmt(seconds,0)+' giây':fmt(seconds/60,1)+' phút'}. Đây là khoảng ứng dụng quan sát được.`));
+      observation=section;
     }
     for(const reason of item.reasons){
       const article=node('article','product-alert-reason');
       if(reason.kind==='capacity'){
-        article.append(node('h3','','Lượng chờ chưa đáp ứng quy mô'),explainCapacity(row));
+        article.append(node('h3','','Mức đáp ứng'),explainCapacity(row));
       }else{
-        article.append(node('h3','','Vượt ngưỡng chênh giá'));
+        article.append(node('h3','','Chênh giá so với ngưỡng'));
         const values=node('dl','alert-spread-values');
         for(const [label,value] of [['Chênh mua–bán',`${fmt(reason.value_vnd??item.spread_vnd,0)} đ`],
           ['So với giá giữa',`${fmt(reason.value_bps/100,3)}%`],['Số bước giá',fmt(reason.value_ticks??item.spread_ticks,1)],
@@ -45,12 +45,15 @@
       }
       articles.push(article);
     }
+    if(observation)articles.push(observation);
     return articles;
   }
   function render(payload,selectedSymbol,onSelect){
     const exportButton=byId('export-button');
     if(!payload){
       for(const id of ['alert-total-count','alert-capacity-count','alert-spread-count'])set(id,'_');
+      set('alert-total-note','Đang đọc sổ lệnh');
+      byId('alert-detail-tags').replaceChildren();
       set('alerts-context','Đang tải dữ liệu sổ lệnh để kiểm tra.');set('alert-filter-count','Đang tải dữ liệu…');set('alert-coverage','');
       byId('alert-body').replaceChildren();set('alerts-empty','Đang tải dữ liệu để kiểm tra.');byId('alerts-empty').hidden=false;
       set('alert-title','Chọn một cổ phiếu');set('alert-company-name','');set('alert-time','');byId('alert-detail').replaceChildren();byId('alert-open-book').disabled=true;
@@ -59,7 +62,8 @@
     const stats=model.summary(payload),items=model.select(payload.alerts,filters()),lookup=new Map(payload.ranking.map(r=>[r.symbol,r]));
     if(!items.some(a=>a.symbol===selectedSymbol))selectedSymbol=items[0]?.symbol||null;
     const selected=items.find(a=>a.symbol===selectedSymbol),threshold=payload.alert_rules?.spread_threshold_bps??25;
-    set('alert-total-count',`${stats.total} / ${stats.eligible}`);set('alert-capacity-count',stats.capacity);set('alert-spread-count',stats.spread);
+    set('alert-total-count',stats.total);set('alert-total-note',`Trong ${stats.eligible} mã có sổ`);
+    set('alert-capacity-count',stats.capacity);set('alert-spread-count',stats.spread);
     set('alert-threshold-caption',`Trên ${fmt(threshold/100,2)}% giá giữa`);
     document.querySelectorAll('[data-alert-kind]').forEach(card=>card.setAttribute('aria-pressed',String(card.dataset.alertKind===byId('alert-kind').value)));
     set('alerts-context',`${payload.universe} · ${stats.visible} mã trong phạm vi và ngành đã chọn · quy mô ${money(payload.notional_vnd)} đồng.`);
@@ -86,6 +90,7 @@
     byId('alerts-empty').hidden=items.length>0;
     set('alerts-empty',!stats.eligible?'Chưa đủ dữ liệu sổ lệnh để đánh giá.':stats.total?'Không có mã phù hợp với bộ lọc.':'Không có mã thỏa điều kiện theo dõi với quy mô và ngưỡng đã chọn.');
     set('alert-title',selected?.symbol||'Chọn một cổ phiếu');set('alert-company-name',selected?(lookup.get(selected.symbol)?.name||selected.group):'Kết quả chi tiết xuất hiện khi bạn chọn một mã trong danh sách.');
+    byId('alert-detail-tags').replaceChildren(...(selected?.reasons||[]).map(reason=>node('span','alert-condition-badge',reason.kind==='capacity'?'Thiếu lượng chờ':'Chênh giá vượt ngưỡng')));
     set('alert-time',selected?`${selected.analysis_mode==='live'?'Sổ trong phiên':'Ảnh sổ đã lưu'} · ${dateTime(selected.analysis_at)}`:'');
     byId('alert-detail').replaceChildren(...(selected?detail(selected,lookup.get(selected.symbol)):[]));byId('alert-open-book').disabled=!selected;
     if(currentView()==='alerts')exportButton.disabled=!!payload.sizing_preview||!items.length||byId('alert-threshold-form').dataset.pending==='true';

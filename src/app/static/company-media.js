@@ -3,6 +3,13 @@
   const byId=id=>document.getElementById(id);
   const hero=byId("company-hero"),logo=byId("company-logo"),cover=byId("company-cover");
   if(!hero||!logo||!cover)return;
+  const details=byId('company-details'),detailsToggle=byId('company-details-toggle');
+  if(details&&detailsToggle)detailsToggle.addEventListener('click',()=>{
+    const expanded=window.lopmDisclosure?window.lopmDisclosure.toggle(details):details.hidden;
+    if(!window.lopmDisclosure)details.hidden=!expanded;
+    detailsToggle.setAttribute('aria-expanded',String(expanded));
+    detailsToggle.textContent=expanded?'Thu gọn thông tin':'Thông tin doanh nghiệp';
+  });
   const photoSource=document.createElement("a");photoSource.className="company-photo-source";photoSource.hidden=true;photoSource.target="_blank";photoSource.rel="noopener noreferrer";hero.append(photoSource);
   const coverBrand=document.createElement("div"),coverBrandImage=document.createElement("img");
   coverBrand.className="company-cover-brand";coverBrand.hidden=true;coverBrand.setAttribute("aria-hidden","true");coverBrandImage.alt="";coverBrandImage.decoding="async";coverBrand.append(coverBrandImage);hero.append(coverBrand);
@@ -46,7 +53,7 @@
     hero.style.setProperty("--company-accent",/^#[a-f0-9]{6}$/i.test(entry?.accent||"")?entry.accent:"#88bca2");
     hero.style.setProperty("--logo-bg",/^#[a-f0-9]{6}$/i.test(entry?.logo_background||"")?entry.logo_background:"#ffffff");
     coverBrand.hidden=true;
-    if(photo&&!graphic&&brand)showImage(coverBrandImage,brand,version,()=>{coverBrand.hidden=false;});else hideImage(coverBrandImage);
+    if(photo&&!graphic&&!office&&brand)showImage(coverBrandImage,brand,version,()=>{coverBrand.hidden=false;});else hideImage(coverBrandImage);
     photoSource.hidden=true;photoSource.removeAttribute("href");
     try{
       const source=new URL(entry?.photo_source_url);

@@ -1,4 +1,5 @@
 """Bounded, asynchronous SSI daily statistics; never delays a quote response."""
+from src.data.sqlite_connection import sqlite_session
 from datetime import datetime,timedelta
 from hashlib import sha256
 from pathlib import Path
@@ -36,7 +37,7 @@ class DailySummaries:
         self.pending=set();self.promoted=set();self.cache={};self.retry_at=0;self.serial=0;self.thread=None
         if self.database.is_file():
             try:
-                with sqlite3.connect(f'file:{self.database.as_posix()}?mode=ro',uri=True) as db:
+                with sqlite_session(f'file:{self.database.as_posix()}?mode=ro',uri=True) as db:
                     self.cache={s:json.loads(p) for s,p in db.execute('SELECT symbol,payload FROM summaries')}
             except (sqlite3.Error,OSError,ValueError):pass
 
@@ -73,7 +74,7 @@ class DailySummaries:
                 result=normalize(rows,symbol,now)
                 if result:
                     self.database.parent.mkdir(parents=True,exist_ok=True)
-                    with sqlite3.connect(self.database,timeout=4) as db:
+                    with sqlite_session(self.database,timeout=4) as db:
                         db.execute('CREATE TABLE IF NOT EXISTS summaries(symbol TEXT PRIMARY KEY,payload TEXT NOT NULL)')
                         db.execute('INSERT OR REPLACE INTO summaries VALUES(?,?)',(symbol,json.dumps(result,ensure_ascii=False,allow_nan=False)))
                     with self.lock:self.cache[symbol]=result

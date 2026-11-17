@@ -3,6 +3,7 @@
 No credentials, authentication or threads are used on import. The independent
 history client never starts a WebSocket or changes the live collector's state.
 """
+from src.data.sqlite_connection import sqlite_session
 from datetime import datetime, timedelta, time as day_time
 from pathlib import Path
 from threading import Condition, Event, RLock, Thread
@@ -121,7 +122,7 @@ class OHLCHistory:
     def _cached(self,key):
         if not self.database.exists():return None
         try:
-            with sqlite3.connect(f'file:{self.database.as_posix()}?mode=ro',uri=True,timeout=3) as db:
+            with sqlite_session(f'file:{self.database.as_posix()}?mode=ro',uri=True,timeout=3) as db:
                 row=db.execute('SELECT payload,saved_at FROM chart_cache WHERE cache_key=?',(key,)).fetchone()
             if row:return json.loads(row[0]),row[1]
         except (sqlite3.Error,ValueError):pass
@@ -129,7 +130,7 @@ class OHLCHistory:
 
     def _store(self,key,data):
         self.database.parent.mkdir(parents=True,exist_ok=True)
-        with sqlite3.connect(self.database,timeout=5) as db:
+        with sqlite_session(self.database,timeout=5) as db:
             db.execute('CREATE TABLE IF NOT EXISTS chart_cache(cache_key TEXT PRIMARY KEY,payload TEXT NOT NULL,saved_at REAL NOT NULL)')
             db.execute('INSERT OR REPLACE INTO chart_cache VALUES(?,?,?)',(key,json.dumps(data,ensure_ascii=False,allow_nan=False),time.time()))
             db.execute('DELETE FROM chart_cache WHERE cache_key NOT IN (SELECT cache_key FROM chart_cache ORDER BY saved_at DESC LIMIT 128)')

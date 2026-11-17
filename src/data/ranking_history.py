@@ -1,4 +1,5 @@
 """Bounded local price samples for all table rows, without per-ticker API calls."""
+from src.data.sqlite_connection import sqlite_session
 from copy import deepcopy
 from datetime import time
 import json
@@ -40,7 +41,7 @@ def load_ranking_sparklines(latest, *, database=DATABASE, max_points=96):
     market_day=max((d for d in market_days if d<=stamp.date().isoformat()),default=stamp.date().isoformat())
     if market_day<stamp.date().isoformat() and path.is_file():
         from src.data.observation_store import tables,hydrate
-        with sqlite3.connect(f'file:{path.as_posix()}?mode=ro',uri=True,timeout=3) as db:
+        with sqlite_session(f'file:{path.as_posix()}?mode=ro',uri=True,timeout=3) as db:
             candidates=[];names=tables(db)
             for name in ('snapshots','captures'):
                 if name in names:
@@ -71,7 +72,7 @@ def _read_samples(latest, stamp, path, count):
     records = []
     try:
         if path.is_file():
-            with sqlite3.connect(f'file:{path.as_posix()}?mode=ro', uri=True, timeout=3) as db:
+            with sqlite_session(f'file:{path.as_posix()}?mode=ro', uri=True, timeout=3) as db:
                 metadata = db.execute('SELECT seq,dataset_id,captured_at FROM snapshots '
                                       'WHERE day=? ORDER BY seq', (result['day'],)).fetchall()
                 for seq, identity, captured in metadata:

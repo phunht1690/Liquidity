@@ -45,16 +45,17 @@
   function render(next){
     if(!next){clear();return;}
     payload=next;const stats=model.summarize(next);
-    put('brief-books',`${model.fmt(stats.books,0)} mã`);
-    put('brief-books-note',`trong ${model.fmt(stats.total,0)} mã của phạm vi · bấm để xem`);
-    put('brief-wide',stats.spreadCount?`${model.fmt(stats.wide,0)} mã`:'_');
-    put('brief-wide-note',`trong ${model.fmt(stats.spreadCount,0)} mã đủ dữ liệu · ngưỡng ${model.fmt(stats.thresholdBps/100,3)}%`);
-    put('brief-partial',stats.capacityKnown?`${model.fmt(stats.partial,0)} mã`:'_');
-    put('brief-partial-note',`trong ${model.fmt(stats.capacityKnown,0)} mã tính được mức đáp ứng`);
+    put('brief-books',`${model.fmt(stats.books,0)}/${model.fmt(stats.total,0)}`);
+    put('brief-books-note','mã trong phạm vi');
+    put('brief-wide',stats.spreadCount?`${model.fmt(stats.wide,0)}/${model.fmt(stats.spreadCount,0)}`:'_');
+    const threshold=String(Number((stats.thresholdBps/100).toFixed(3))).replace('.',',');
+    put('brief-wide-note',`mã · ngưỡng ${threshold}%`);
+    put('brief-partial',stats.capacityKnown?`${model.fmt(stats.partial,0)}/${model.fmt(stats.capacityKnown,0)}`:'_');
+    put('brief-partial-note','mã tính được mức đáp ứng');
     put('brief-spread',model.finite(stats.medianSpreadBps)?model.fmt(stats.medianSpreadBps/100,3)+'%':'_');
-    put('brief-spread-note',`tính từ ${stats.spreadCount} mã có chênh giá`);
-    put('brief-basis',`Ảnh sổ đối chiếu: ${model.date(next.analysis?.asof)} · Quy mô: ${model.money(next.notional_vnd)}${next.sizing_preview?' · Đang đồng bộ số tiền':''}`);
-    put('ranking-basis',`Ảnh sổ ${model.date(next.analysis?.asof)} · quy mô ${model.money(next.notional_vnd)}${next.sizing_preview?' · đang đồng bộ số tiền':''}. Giá của từng mã có thời điểm riêng.`);
+    put('brief-spread-note',`${stats.spreadCount} mã có chênh giá`);
+    put('brief-basis',`Sổ ${model.date(next.analysis?.asof)} · Quy mô ${model.money(next.notional_vnd)}${next.sizing_preview?' · Đang đồng bộ':''}`);
+    put('ranking-basis','Giá theo thời điểm từng mã.');
     for(const button of document.querySelectorAll('[data-brief-export]'))button.disabled=!!next.sizing_preview;
     renderSectors(next);
   }

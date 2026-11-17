@@ -1,5 +1,6 @@
 """SSI FastConnect v3, market data only. Tokens never leave the server."""
 from __future__ import annotations
+from src.data.sqlite_connection import sqlite_session
 from datetime import datetime,timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -391,7 +392,7 @@ class SSISession:
             path=CACHE.with_name('events.sqlite3')
             if not batch and not path.is_file():return
             path.parent.mkdir(parents=True,exist_ok=True)
-            with sqlite3.connect(path,timeout=2) as db:
+            with sqlite_session(path,timeout=2) as db:
                 db.execute('PRAGMA journal_mode=WAL')
                 db.execute('CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY AUTOINCREMENT,day TEXT NOT NULL,received_at TEXT NOT NULL,payload TEXT NOT NULL)')
                 db.execute('CREATE INDEX IF NOT EXISTS events_day_seq ON events(day,seq)')

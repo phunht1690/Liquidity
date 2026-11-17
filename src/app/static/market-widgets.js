@@ -5,7 +5,6 @@
     const pct=engine.referenceChange(points,change,changeDay);
     set('chart-symbol-label',symbol||'_');set('chart-change-label',valid(pct)?signed(pct)+'%':'');
     $('chart-change-label').style.color=engine.trendColor(pct);
-    engine.sparkline('chart-sparkline',points,pct,`${symbol||''} · ${valid(pct)?signed(pct)+'% so với tham chiếu':'giá trong khoảng đang xem'}`);
   }
   function depth(payload){
     const r=payload?.selected;
@@ -32,7 +31,7 @@
   }
   function render(payload){
     const r=payload?.selected;
-    const asof=$('market-price-asof');if(asof){const caption=window.lopmProductUX.priceCaption(r);asof.hidden=!caption;asof.textContent=caption;}
+    const asof=$('market-price-asof');if(asof){const caption=window.lopmProductUX.priceCaption(r,{source:false});asof.hidden=!caption;asof.textContent=caption;}
     depth(payload);
   }
   window.lopmWidgets={render,chartIdentity};

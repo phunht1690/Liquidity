@@ -1,0 +1,153 @@
+/* Readable data screens within the retained ROMER shell. */
+:root:not([data-theme=light]){--muted:#a7b4c2;--brief-muted:#a7b8c8;--border:#303942}
+#main-content{font-size:13px}
+#main-content :is(.product-caption,.data-small-note,.data-inline-link,.brief-basis,.liquidity-filter-note,.ranking-trend-note,.trade-history-caption,.book-basis p){font-size:12px;line-height:1.7}
+#main-content :is(.product-panel .panel-heading p,.workspace-section-heading p,.data-compact-heading p,.sector-heading p){font-size:12px;line-height:1.7}
+#main-content :is(.product-panel .panel-heading h2,.brief-heading h2,.sector-heading h3){font-size:18px;line-height:1.5}
+.workspace-section-heading h2{font-size:21px}.workspace-section-heading{margin-bottom:16px}
+.product-panel{border-radius:8px}
+.product-panel .axis-titles,.product-panel .chart-tooltip,.chart-label{font-size:12px}
+#telemetry-panel :is(.chart-data-status,.chart-visible-range,.chart-heading-meta p,.chart-navigator-heading,.chart-series-options>legend){font-size:12px}
+#telemetry-panel .chart-heading-meta .chart-company-chip{font-size:13px;gap:12px}
+#telemetry-panel .chart-hover-card{font-size:12px}#telemetry-panel .chart-hover-card :is(strong,small){font-size:12px;line-height:1.6}
+#telemetry-panel :is(.chart-quick-controls,.chart-detail-controls)>label,#telemetry-panel .chart-drag-choice>span,#telemetry-panel .chart-series-options>label{font-size:12px}
+#telemetry-panel .chart-source-details summary,#telemetry-panel #chart-source-note,#telemetry-panel #chart-source-fields :is(dt,dd){font-size:12px;line-height:1.7}
+#main-content :is(#analysis-controls,#telemetry-panel,#alerts-view,#methods-view,#ranking-panel,#sizing-controls) :is(select,input[type=search],input[type=number],input[type=date]){
+  min-height:40px;font-size:13px;line-height:1.5;border:1px solid var(--border);border-radius:6px;color:var(--text);background-color:var(--panel)
+}
+#main-content :is(.product-filters>label,.stock-table-controls>label,.alert-workspace-controls>label,.coverage-scope-control,.sizing-field label){font-size:12px;line-height:1.6;color:var(--muted)}
+#main-content .button{min-height:38px;font-size:12px!important;line-height:1.4;border-radius:6px;gap:8px}
+#main-content .button:not(.primary){background:var(--panel);border-color:var(--border);color:var(--text)}
+#main-content .button:hover:not(:disabled){border-color:var(--cyan)}
+#main-content :is(.button,select,input[type=search],input[type=number],input[type=date]):focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+#main-content :is(.workspace-tabs>[role=tab],.segmented>button){font-size:12px;min-height:36px}
+#main-content .workspace-tabs>[role=tab]{min-height:40px}
+#main-content #chart-settings-toggle[aria-expanded=true]{background:var(--chart-control-selected);border-color:var(--cyan);color:var(--cyan)}
+.product-status,.product-status :is(#last-updated,#book-updated,.auto-update-state){font-size:12px;line-height:1.7}
+.tag,.alerts-mode{font-size:11px;line-height:1.6;font-variant-numeric:tabular-nums}
+
+/* Consistent summary card rhythm; each count keeps its own denominator. */
+.liquidity-summary{padding:20px;margin-bottom:24px}
+.brief-kpis{gap:12px;align-items:stretch;margin:16px 0 14px}
+.brief-kpi{display:grid;grid-template-rows:minmax(36px,auto) 40px 1fr;align-content:start;align-items:start;gap:4px;padding:16px;min-height:142px;border-radius:7px}
+.brief-kpi>span{font-size:13px;line-height:1.5;min-height:0}.brief-kpi>strong{font-size:31px;line-height:1.2;letter-spacing:-.03em}
+.brief-kpi>small{font-size:12px;line-height:1.6;min-height:0}
+.liquidity-summary #scope-data-note,.market-activity :is(summary,summary>b,p){font-size:12px;line-height:1.7}
+#main-content .market-activity>summary{color:var(--text)}
+.product-kpis{gap:14px;align-items:stretch}
+.product-kpis article{padding:17px;gap:9px;min-height:158px}
+.product-kpis article>span{font-size:12px;line-height:1.5;min-height:36px;color:var(--muted)}
+.product-kpis strong{font-size:24px;line-height:1.3}.product-kpis small,.sizing-current-link{font-size:12px;line-height:1.6}
+
+/* Compact issuer identity keeps the actual image and its source visible. */
+.company-hero,.company-hero:is([data-media=headquarters],[data-media=business],[data-media=brand]){
+  display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);grid-template-rows:auto auto;min-height:288px;padding:24px;gap:14px 22px;align-items:start;margin-bottom:20px
+}
+.company-hero .company-identity{grid-column:1;grid-row:1;max-width:none;align-self:start}
+.company-brand-row{display:flex;gap:14px;align-items:center;min-width:0}
+.company-hero .company-logo-card,.company-hero:is([data-media=headquarters],[data-media=business],[data-media=brand]) .company-logo-card{width:112px;height:56px;flex:0 0 112px;padding:10px 12px;border-radius:7px;box-shadow:none}
+.company-titles{min-width:0;flex:1}
+.company-hero .company-titles .company-identity-meta{margin:0;gap:7px}
+.company-hero .company-ticker{font-size:13px;padding:5px 8px}
+.company-hero .company-sector{font-size:12px;color:#c4d4dc;line-height:1.5}
+.company-hero #stock-name{font-size:12px;color:#e3edf0;line-height:1.65;margin:6px 0 0;text-wrap:pretty}
+.company-meta-actions{display:flex;align-items:center;gap:4px 16px;flex-wrap:wrap;margin-top:10px}
+.company-hero .company-location{font-size:12px;line-height:1.6;color:#c0d3dc;margin:0;max-width:100%}
+.company-details-toggle{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:#b4e1e7;background:transparent;border:0;min-height:30px;padding:2px 0;cursor:pointer;text-align:left}
+.company-details-toggle::after{content:'+';font-size:15px;line-height:1}.company-details-toggle[aria-expanded=true]::after{content:'−'}
+.company-details-toggle:hover{text-decoration:underline}.company-details-toggle:focus-visible{outline:2px solid #6ed4dc;outline-offset:3px;border-radius:3px}
+.company-details{margin-top:8px;padding-top:8px;border-top:1px solid #bfd5e324}
+.company-details .company-business{font-size:12px;color:#e2ecef;line-height:1.7;margin:0 0 6px;font-weight:400}
+.company-details .company-website{margin:0;font-size:12px;color:#b4e1e7}
+.company-hero:is([data-media=headquarters],[data-media=business]) .company-hero-shade{background:linear-gradient(90deg,#0b151bfa 0%,#0b151bf5 43%,#0b151b9c 57%,transparent 71%),linear-gradient(0deg,#0b151b45,transparent 40%)}
+.company-hero .product-price,.company-hero:is([data-media=headquarters],[data-media=business],[data-media=brand]) .product-price{
+  grid-column:1;grid-row:2;align-self:end;justify-self:stretch;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;padding:13px 0 0;min-width:0;width:100%;border:0;border-radius:0;background:none;backdrop-filter:none;text-align:left;align-items:center
+}
+.company-hero .product-price strong,.company-hero:is([data-media=headquarters],[data-media=business],[data-media=brand]) .product-price strong{grid-column:1;grid-row:1/3;font-size:30px;line-height:1.2;white-space:nowrap;color:#f3f7fa}
+.company-hero .product-price #market-change{grid-column:2;grid-row:1;font-size:12px;line-height:1.6}
+.company-hero #market-change.green-text{color:#73c69e}.company-hero #market-change.red-text{color:#ff9d91}
+.company-hero .product-price #market-volume{grid-column:2;grid-row:2;font-size:12px;line-height:1.6;color:#c1d2dc}
+.company-hero .product-price #market-price-asof{grid-column:1/-1;grid-row:3;font-size:11px;line-height:1.7;color:#c1d2dc}
+.company-hero .product-price .price-limit-line{grid-column:1/-1;grid-row:4;display:block;margin-top:7px;max-width:100%;white-space:normal}
+.price-reference-day{display:block;font-size:11px;line-height:1.6;color:#b9cbd4;margin-bottom:6px}
+.price-limit-values{display:flex;flex-wrap:wrap;gap:6px}
+.company-hero .price-limit-chip{display:flex;flex-direction:column;gap:3px;flex:1 1 90px;max-width:160px;min-width:0;padding:7px 10px;border:1px solid #c1d6e026;border-radius:5px;background:#0b151b94;white-space:nowrap}
+.company-hero .price-limit-chip>span{font-size:11px;color:#b9cbd4;line-height:1.4}.company-hero .price-limit-chip>b{font-size:13px;font-weight:500;line-height:1.5;color:#e7f1f5;font-variant-numeric:tabular-nums;white-space:nowrap}
+#company-hero .price-reference-day,#company-hero .price-limit-chip>span{font-size:12px;color:#b9cbd4}
+.company-hero .company-photo-source{font-size:11px;padding:5px 8px;max-width:46%;line-height:1.6}
+.company-hero .company-cover-brand{width:94px;height:50px;padding:8px;border-radius:6px}
+#main-content .daily-market-strip{gap:18px;padding:14px 0 18px}
+#main-content .daily-market-strip :is(span,small,dt){font-size:12px;line-height:1.7}
+#main-content .daily-market-strip dd{font-size:18px;line-height:1.5}
+#main-content :is(#volume-context-basis,#volume-context-values,#foreign-caption){font-size:12px;line-height:1.7}
+.volume-context>span,.foreign-context summary{font-size:13px}.volume-context>strong{font-size:20px}
+.foreign-context :is(dt,dd){font-size:12px;line-height:1.6}
+
+/* A compact alert detail presents the condition before its observation history. */
+#alerts-view .alerts-section-intro p,#alerts-view :is(.alert-coverage,.alert-table-caption,.alert-rules-note){font-size:12px;line-height:1.7}
+#alerts-view .alert-summary-card{padding:17px;min-height:132px;gap:8px}
+#alerts-view .alert-summary-card>span{font-size:13px;line-height:1.5;min-height:36px}
+#alerts-view .alert-summary-card>strong{font-size:31px}#alerts-view .alert-summary-card>small{font-size:12px;line-height:1.6}
+#alerts-view .product-alert-list :is(td,th){font-size:13px;line-height:1.6}
+#alerts-view :is(.alert-ticker small,.alert-spread-caption,.alert-condition-badge,.alert-company-name,#alert-time){font-size:12px;line-height:1.7}
+#alerts-view .alert-condition-badge{border-radius:5px;padding:4px 8px;white-space:normal}
+.alert-detail-tags{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}.alert-detail-tags:empty{display:none}
+#alerts-view .alert-detail-card{padding:22px;border-top:2px solid var(--cyan);border-radius:8px}
+#alerts-view #alert-title{font-size:27px;line-height:1.3}
+#alerts-view #alert-time{margin-top:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+#alerts-view .product-alert-reason{padding:18px 0;margin:0;border-bottom:1px solid var(--border)}
+#alerts-view .product-alert-reason h3{font-size:15px;line-height:1.5;margin-bottom:12px}
+#alerts-view :is(.alert-capacity-side h4,.alert-capacity-side p,.alert-capacity-side .alert-shortage,.alert-spread-values,.alert-rule-note){font-size:12px;line-height:1.7}
+#alerts-view .alert-capacity-side{border-radius:6px;padding:12px}.alert-capacity-side .alert-fill strong{font-size:24px}
+#alerts-view .alert-observation{border:0;border-bottom:1px solid var(--border);padding:15px 0;margin:0}
+#alerts-view .alert-observation summary{font-size:12px;color:var(--muted);cursor:pointer;line-height:1.7}
+#alerts-view .alert-observation p{font-size:12px;line-height:1.7}.alert-observation summary:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+#alerts-view .product-inspector>.product-caption:last-child{font-size:12px;line-height:1.7}
+
+/* Three actions, one destination per card. */
+#data-guide-view #data-guide-title{font-size:23px;line-height:1.5}
+#data-guide-view .data-compact-heading>p,#methods-view .data-details :is(p,li,dt,dd){font-size:13px;line-height:1.8}
+#main-content #methods-view .data-details>summary{color:var(--text)}
+#data-guide-view dl :is(dt,dd){font-size:13px;line-height:1.8}
+.guide-start-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.guide-start-steps>a{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;padding:20px;border:1px solid var(--border);border-radius:8px;background:var(--panel);align-items:start;transition:background .16s,border-color .16s,transform .16s}
+.guide-start-steps>a>span{display:grid;place-items:center;width:36px;height:36px;border:1px solid var(--cyan);border-radius:50%;background:var(--brief-soft);color:var(--cyan);font-size:13px;font-weight:600}
+.guide-start-steps>a>div{display:flex;flex-direction:column;min-height:132px;gap:9px}
+.guide-start-steps b{font-size:16px;line-height:1.5;color:var(--text)}.guide-start-steps small{font-size:13px;line-height:1.75;color:var(--muted)}
+.guide-start-steps em{font-size:12px;line-height:1.6;color:var(--cyan);margin:auto 0 0;padding-top:5px}
+#methods-view .guide-start-steps b{font-size:16px}#methods-view .guide-start-steps small{font-size:13px}#methods-view .guide-start-steps em{font-size:12px}
+.guide-start-steps>a:hover{transform:translateY(-2px);border-color:var(--cyan);background:var(--brief-soft)}
+#main-content :is(.data-compact-heading p,.data-summary span,.data-summary small,.data-storage-summary,.data-source-groups,.guide-quick-read dd){font-size:12px;line-height:1.75}
+#main-content .data-details>summary{font-size:13px;line-height:1.7}
+#main-content :is(.ranking-table td,.sector-table td,.product-cost-table td,.data-sources-table td){font-size:13px;line-height:1.65}
+#main-content .ranking-table td{font-size:13px!important}
+#main-content :is(.ranking-table th,.sector-table th,.product-cost-table th,.data-sources-table th){font-size:12px;line-height:1.6}
+#main-content :is(.ranking-table small,.sector-table td small,.product-cost-table td small){font-size:11px;line-height:1.65}
+.app-footer{font-size:12px!important;line-height:1.7}
+@media(max-width:1100px){
+  .guide-start-steps{grid-template-columns:1fr}.guide-start-steps>a>div{min-height:0}
+  .company-brand-row{gap:10px}.company-hero .company-logo-card{width:96px;flex-basis:96px}
+}
+@media(max-width:767px){
+  .company-hero,.company-hero:is([data-media=headquarters],[data-media=business],[data-media=brand]){display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;padding:20px;gap:12px;min-height:0}
+  .company-hero .company-cover,.company-hero:is([data-media=headquarters],[data-media=business],[data-media=brand]) .company-cover{position:absolute;inset:0;width:100%;height:100%;min-height:0;max-width:none;aspect-ratio:auto;order:0;margin:0;padding:0;z-index:-3}
+  .company-hero .company-hero-shade,.company-hero:is([data-media=headquarters],[data-media=business]) .company-hero-shade{background:linear-gradient(90deg,#0b151bfa,#0b151bd9)}
+  .company-hero .company-identity{width:100%;max-width:none;align-self:start}
+  .company-hero .company-brand-row .company-logo-card{width:94px;flex-basis:94px;height:50px;padding:9px}
+  .company-meta-actions{gap:3px 14px;margin-top:9px}.company-hero .company-cover-brand{display:none}
+  .company-hero .product-price,.company-hero:is([data-media=headquarters],[data-media=business],[data-media=brand]) .product-price{grid-template-columns:auto minmax(0,1fr);gap:5px 12px;padding-top:10px}
+  .company-hero .product-price strong,.company-hero:is([data-media=headquarters],[data-media=business],[data-media=brand]) .product-price strong{font-size:27px}
+  .company-hero .price-limit-chip{padding:7px 8px;flex-basis:78px;max-width:none}.company-hero .price-limit-chip>b{font-size:12px}
+  .company-hero .company-photo-source{font-size:10px;max-width:48%}
+  .brief-kpi{padding:13px;min-height:140px}.brief-kpi>strong{font-size:28px}
+  .product-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product-kpis article{padding:14px;min-height:158px}
+  .product-kpis strong{font-size:21px}.product-kpis article>span{font-size:12px}
+  #main-content :is(.product-panel .panel-heading h2,.brief-heading h2,.sector-heading h3){font-size:17px}
+  .guide-start-steps>a{padding:17px}.guide-start-steps>a>div{min-height:0}
+  #alerts-view .alert-summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #alerts-view .alert-summary-card{min-height:142px;padding:12px}#alerts-view .alert-summary-card>strong{font-size:clamp(22px,6.6vw,28px)}
+  #main-content .daily-market-strip dl{gap:14px}.product-status :is(#last-updated,#book-updated){font-size:12px}
+}
+@media(max-width:359px){.company-hero .price-limit-chip{flex-basis:110px}}
+@media(prefers-reduced-motion:reduce){.guide-start-steps>a{transition:none}.guide-start-steps>a:hover{transform:none}}
+@media print{.company-details-toggle{display:none!important}.company-hero :is(#stock-name,.product-price strong,.price-limit-chip>b,.price-reference-day){color:#111!important}.company-hero .price-limit-chip{background:white;border-color:#ccc}}

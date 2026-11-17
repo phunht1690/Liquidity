@@ -3,6 +3,7 @@
 Product requests only read the compact cache. Backfill uses the existing OHLC
 client and its request lock; it never starts an extra socket or a client per row.
 """
+from src.data.sqlite_connection import sqlite_session
 from copy import deepcopy
 from datetime import datetime,timedelta,time as clock_time
 from pathlib import Path
@@ -66,7 +67,7 @@ class IntradaySparklines:
         self.quotes={};self.cache={};self.failures={};self.last_error=None;self.retry_at=0;self.serial=0;self.thread=None
         if self.database.is_file():
             try:
-                with sqlite3.connect(f'file:{self.database.as_posix()}?mode=ro',uri=True,timeout=3) as db:
+                with sqlite_session(f'file:{self.database.as_posix()}?mode=ro',uri=True,timeout=3) as db:
                     self.cache={s:json.loads(p) for s,p in db.execute('SELECT symbol,payload FROM intraday_lines')}
             except (OSError,ValueError,sqlite3.Error):pass
 
@@ -117,7 +118,7 @@ class IntradaySparklines:
 
     def _store(self,symbol,item):
         self.database.parent.mkdir(parents=True,exist_ok=True)
-        with sqlite3.connect(self.database,timeout=4) as db:
+        with sqlite_session(self.database,timeout=4) as db:
             db.execute('CREATE TABLE IF NOT EXISTS intraday_lines(symbol TEXT PRIMARY KEY,payload TEXT NOT NULL)')
             db.execute('INSERT OR REPLACE INTO intraday_lines VALUES(?,?)',(symbol,json.dumps(item,ensure_ascii=False,allow_nan=False)))
         with self.lock:self.cache[symbol]=item

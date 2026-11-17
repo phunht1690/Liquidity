@@ -1,4 +1,5 @@
 """Read-only chart replay of genuine saved observations, independent of Live."""
+from src.data.sqlite_connection import sqlite_session
 from datetime import date
 import json
 import sqlite3
@@ -89,7 +90,7 @@ def _read_day(selected,query,config,database,days):
     # ticker. Legacy archives also avoid expanding thousands of whole books.
     from src.data.observation_store import tables,hydrate
     latest=None
-    with sqlite3.connect(f'file:{database.as_posix()}?mode=ro',uri=True,timeout=3) as db:
+    with sqlite_session(f'file:{database.as_posix()}?mode=ro',uri=True,timeout=3) as db:
         names=tables(db)
         candidates=[]
         for name in ('snapshots','captures'):

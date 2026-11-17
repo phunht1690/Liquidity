@@ -4,6 +4,7 @@ Legacy snapshots remain readable and are never migrated or overwritten in place.
 Each capture day begins with a full checkpoint of quotes, so day retention cannot
 remove a prerequisite for a retained day. Unchanged after-hours polls add no rows.
 """
+from src.data.sqlite_connection import sqlite_session
 from datetime import datetime,timedelta
 from functools import lru_cache
 from hashlib import sha256
@@ -38,7 +39,7 @@ def create(db):
 
 def append(payload,database,retention_days=30):
     stamp=event_time(payload['captured_at']);day=stamp.date().isoformat()
-    with sqlite3.connect(database,timeout=8) as db:
+    with sqlite_session(database,timeout=8) as db:
         db.execute('PRAGMA journal_mode=WAL');create(db)
         prior=db.execute('SELECT seq,captured_at,meta_id FROM captures WHERE day=? ORDER BY seq DESC LIMIT 1',(day,)).fetchone()
         meta={k:payload[k] for k in ('schema_version','source','collection_mode','collection_kind','transport','membership','limitations') if k in payload}
@@ -74,7 +75,7 @@ def append(payload,database,retention_days=30):
 
 def hydrate(database,identity):
     try:
-        with sqlite3.connect(f'file:{database.as_posix()}?mode=ro',uri=True,timeout=3) as db:
+        with sqlite_session(f'file:{database.as_posix()}?mode=ro',uri=True,timeout=3) as db:
             names=tables(db)
             row=db.execute('SELECT seq,day,captured_at,m.payload FROM captures c JOIN capture_meta m ON m.id=c.meta_id WHERE dataset_id=?',(identity,)).fetchone() if 'captures' in names else None
             if row:
@@ -92,7 +93,7 @@ def hydrate(database,identity):
 def _legacy_series(path,symbol,day,max_seq,limit):
     """The legacy archive stops growing after upgrade; cache its small projection."""
     result=[]
-    with sqlite3.connect(f'file:{path}?mode=ro',uri=True,timeout=4) as db:
+    with sqlite_session(f'file:{path}?mode=ro',uri=True,timeout=4) as db:
         last=db.execute('SELECT payload FROM snapshots WHERE day=? AND seq<=? ORDER BY seq DESC LIMIT 1',(day,max_seq)).fetchone()
         if not last:return ()
         final=json.loads(last[0]);meta={k:final.get(k) for k in ('membership','schema_version','source','collection_mode','collection_kind')}
@@ -122,7 +123,7 @@ def read_series(database,symbol,*,day=None,limit=10000,recent_days=3):
     if not database.is_file():return []
     result=[];metadata_cache={}
     try:
-        with sqlite3.connect(f'file:{database.as_posix()}?mode=ro',uri=True,timeout=4) as db:
+        with sqlite_session(f'file:{database.as_posix()}?mode=ro',uri=True,timeout=4) as db:
             names=tables(db);days=set()
             for name in ('snapshots','captures'):
                 if name in names:days.update(r[0] for r in db.execute(f'SELECT DISTINCT day FROM {name}'))
@@ -154,7 +155,7 @@ def new_trends(database,day,symbols,max_points=96):
     result={}
     if not database.is_file():return result
     try:
-        with sqlite3.connect(f'file:{database.as_posix()}?mode=ro',uri=True,timeout=3) as db:
+        with sqlite_session(f'file:{database.as_posix()}?mode=ro',uri=True,timeout=3) as db:
             if 'quote_changes' not in tables(db):return result
             for symbol in symbols:
                 rows=db.execute('SELECT c.captured_at,q.price_vnd,q.trading_date,q.market_code FROM quote_changes q JOIN captures c ON c.seq=q.capture_seq WHERE q.day=? AND q.symbol=? ORDER BY q.capture_seq DESC LIMIT ?',(day,symbol,max_points*3)).fetchall()

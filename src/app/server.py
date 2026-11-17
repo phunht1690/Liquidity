@@ -36,6 +36,7 @@ from src.data.market_activity import enrich_market_activity,stop_market_activity
 from src.data.alert_history import attach_history
 from src.data.trade_history import recent_trades,prepare_trade_index
 from src.app.background import background_status,stop_requested
+from src.app.query_cache import QueryCache,QueryBusy
 
 PROJECT = Path(__file__).resolve().parents[2]
 STATIC = Path(__file__).resolve().parent / 'static'
@@ -43,6 +44,17 @@ CONFIG = json.loads((PROJECT / 'config/config.json').read_text(encoding='utf-8')
 LOGGER = logging.getLogger('lopm')
 QUERY_FIELDS = {'symbol', 'group', 'window', 'notional', 'lqs_profile', 'dataset_id','universe'}
 EVENT_SLOTS = BoundedSemaphore(12)
+QUERY_CACHE = QueryCache(max_entries=6,max_workers=2,ttl=2,wait_seconds=8)
+
+
+def cached_query(builder,query,*args):
+    """A new SSI capture invalidates results; health/events bypass this gate."""
+    from src.data.ssi_feed import CACHE
+    try:
+        info=CACHE.stat();revision=(info.st_mtime_ns,info.st_size,info.st_ino)
+    except OSError:revision=None
+    key=(builder,revision,tuple(sorted((k,tuple(v)) for k,v in query.items())))
+    return QUERY_CACHE.get(key,lambda:builder(query,*args))
 
 
 def event_signature(event: dict) -> str:
@@ -211,6 +223,7 @@ class Handler(BaseHTTPRequestHandler):
                     'replay_scope':'chart_only','global_replay_available':False,
                     'chart_replay_available':True,
                     'ui_transport':'server_sent_events','collector':collector_event()['runtime'],
+                    'query_processing':QUERY_CACHE.status(),
                     'ssi_live_available':collector_status().get('auth',{}).get('websocket_status')=='connected','provider':'ssi_fastconnect',
                     'poll_seconds':CONFIG.get('ssi',{}).get('live_poll_seconds',10),
                     'default_notional_vnd':CONFIG.get('notional_vnd',1e9),
@@ -222,11 +235,11 @@ class Handler(BaseHTTPRequestHandler):
             elif path.path == '/api/state':
                 self._json(410, {'error':'API nghiên cứu cũ đã ngừng phục vụ. Dùng /api/product.'})
             elif path.path == '/api/product':
-                self._json(200,product_state(parse_qs(path.query,keep_blank_values=True)))
+                self._json(200,cached_query(product_state,parse_qs(path.query,keep_blank_values=True)))
             elif path.path == '/api/data-coverage':
-                self._json(200,data_coverage_state(parse_qs(path.query,keep_blank_values=True)))
+                self._json(200,cached_query(data_coverage_state,parse_qs(path.query,keep_blank_values=True)))
             elif path.path == '/api/product/export.csv':
-                query=parse_qs(path.query,keep_blank_values=True);subset=query.pop('symbols',None);state=product_state(query)
+                query=parse_qs(path.query,keep_blank_values=True);subset=query.pop('symbols',None);state=cached_query(product_state,query)
                 expected=query.get('dataset_id',[None])[0]
                 if expected and expected!=state['dataset_id']:
                     self._json(409,{'error':'Dữ liệu vừa đổi. Chờ màn hình cập nhật rồi xuất lại.'});return
@@ -237,7 +250,7 @@ class Handler(BaseHTTPRequestHandler):
                     state={**state,'ranking':[r for r in state['ranking'] if r['symbol'] in requested]}
                 self._send(200,export_product(state),'text/csv; charset=utf-8','LOPM_thanh_khoan_SSI.csv')
             elif path.path == '/api/chart-cache':
-                self._json(200,read_chart_archive(parse_qs(path.query,keep_blank_values=True),CONFIG))
+                self._json(200,cached_query(read_chart_archive,parse_qs(path.query,keep_blank_values=True),CONFIG))
             elif path.path == '/api/price-history':
                 try:self._json(200,read_price_history(parse_qs(path.query,keep_blank_values=True)))
                 except SSIAPIError as exc:
@@ -274,6 +287,9 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(200, target.read_bytes(), mime + ('; charset=utf-8' if target.suffix in ('.html','.css','.js','.svg') else ''))
         except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
             return
+        except QueryBusy:
+            self._json(503,{'mode':'pending','source':'ssi_fastconnect','reason':'local_query_busy',
+                            'retry_after':2,'error':'Ứng dụng đang xử lý dữ liệu; giữ bản đã nhận và tự thử lại.'})
         except FileNotFoundError:
             runtime=collector_status()
             self._json(202, {'mode':'pending','source':'ssi_fastconnect','error':runtime.get('last_error') or 'Đang kết nối SSI và thu bản đầu tiên. Màn hình sẽ tự thử lại.','runtime':runtime})

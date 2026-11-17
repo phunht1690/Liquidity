@@ -103,6 +103,12 @@ Chọn một trong hai cách trên; tránh chạy hai máy chủ cùng cổng. �
 
 ### Tổng quan
 
+Chọn tab **Cổ phiếu**, **Sổ lệnh** hoặc **Bảng giá** để xem từng nội dung riêng. Tab giữ mã đang chọn, bộ lọc và thiết lập; không cần cuộn qua các phần còn lại. Có thể dùng phím trái/phải khi đang chọn thanh tab. Các mục có dấu **+ / −** thu mở nhẹ; hiệu ứng tắt theo tùy chọn giảm chuyển động của thiết bị.
+
+Tab **Cổ phiếu** ưu tiên nhận diện mã, thống kê phiên và biểu đồ. Bấm tỷ lệ khối lượng để xem lượng đem so sánh và trung bình 20 phiên; Esc hoặc bấm ra ngoài để đóng. Thẻ **Khối ngoại** nằm dưới biểu đồ, ghi phiên riêng và mở chi tiết mua, bán, room ngoại còn lại. Cách tính và nguồn thống kê của mã nằm trong **Dữ liệu & cách dùng → Hướng dẫn → Ví dụ**. Bốn chỉ tiêu chênh mua–bán, độ dày, bên chờ nhiều hơn và mức đáp ứng quy mô nằm ở đầu tab **Sổ lệnh**.
+
+Tóm tắt thanh khoản toàn phạm vi và nút **Xuất tóm tắt HTML** nằm ở đầu tab **Bảng giá**, phía trên lựa chọn cổ phiếu/theo ngành. Mỗi thẻ giữ mẫu số riêng theo số mã đủ dữ liệu. Bấm thẻ để lọc bảng; mốc sổ và quy mô ghi ngay trong khung tóm tắt.
+
 1. Chọn **Phạm vi → Ngành → Cổ phiếu**. Ngày và thời điểm giá/sổ hiển thị riêng.
 2. Trong **Sổ lệnh & quy mô**, kéo thanh, nhập số tiền hoặc chọn mức nhanh để kiểm tra. Kết quả tự tính lại trên ảnh sổ đang xem.
 3. Xem chênh mua–bán, giá trị chờ, tỷ lệ chờ hai phía và phần khối lượng có đối ứng theo số tiền đã chọn.
@@ -164,6 +170,7 @@ Dung lượng phát sinh tùy số mã và thời gian thu. Chi tiết: [chính 
 | --- | --- |
 | Không mở được app | Kiểm tra Python 3.10+, môi trường `%USERPROFILE%\.venv` và đã cài `requirements.txt`; thử lệnh chạy trực tiếp ở trên. |
 | Giao diện có nhiều `_` | Kiểm tra `.env`, quyền FastConnect Data của tài khoản và kết nối Internet; xem độ phủ và thời điểm tại tab Dữ liệu. |
+| Key hợp lệ nhưng app chậm hoặc ngừng nhận dữ liệu | Kiểm tra `/api/health`: bộ thu có chạy, WebSocket có kết nối và lần nhận cuối có tăng không. App giới hạn hai truy vấn lịch sử nặng chạy cùng lúc, gộp lượt tải trùng và tự đóng các kết nối SQLite sau khi dùng. Xem [ghi nhận khôi phục kết nối](docs/ssi_connection_recovery.md). |
 | Lịch sử/đường nhỏ chưa đủ | Lần đầu app tải lần lượt ở nền; xem tiến độ tải bù và giữ bộ thu chạy. |
 | Thị trường đang nghỉ | App hiển thị cache đã có, ghi đúng ngày phiên và thời điểm; không làm mới nhãn thời gian của dữ liệu cũ. |
 | BQ phiên bị ngắt hoặc MA50 không bật được | BQ chỉ có các mốc đã ghi; MA50 cần tối thiểu 50 nến. Rê vào tùy chọn để xem giải thích. |

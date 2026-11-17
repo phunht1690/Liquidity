@@ -15,12 +15,13 @@ function harness(reduced=false){
     animate(){animations.push(this.id);}
     querySelectorAll(){return this.tabs||[];}
   }
-  for(const [name,values] of [['market',['stocks','sectors']],['book',['orders','trades']],['data',['status','guide']]]){
+  for(const [name,values] of [['overview',['stock','book','ranking']],['market',['stocks','sectors']],['book',['orders','trades']],['data',['status','guide']]]){
     const list=new Element(name,{}, {workspaceTabs:name});list.tabs=[];lists.push(list);
     for(const [i,value] of values.entries()){
       const panel=new Element(`${name}-${value}-panel`);
       const dataset={tabValue:value};
       if(name==='data')dataset.tabHash=value==='guide'?'how-it-works':'data';
+      if(name==='overview')dataset.tabHash=value;
       list.tabs.push(new Element(`${name}-${value}-tab`,{'aria-controls':panel.id,'aria-selected':String(i===0)},dataset));
     }
   }
@@ -75,4 +76,25 @@ h.ui.syncDataRoute('data-off-hours');assert.equal(h.elements.get('data-off-hours
 h.elements.get('data-guide-tab').handlers.click();assert.equal(h.location.hash,'how-it-works');
 h.key('data-guide-tab','ArrowLeft');assert.equal(h.location.hash,'data');
 assert.equal(h.focused(),'data-status-tab');
+// Overview switches replace whole panels and retain independent controls.
+assert.equal(h.ui.overviewView(),'stock');
+h.elements.get('overview-stock-panel').chartRange='1mo';
+let prevented=false;
+h.elements.get('overview-ranking-tab').handlers.click({preventDefault(){prevented=true;}});
+assert.equal(prevented,true,'Tab links suppress native anchor scrolling.');
+assert.equal(h.location.hash,'ranking');
+assert.equal(h.elements.get('overview-ranking-panel').hidden,false);
+assert.equal(h.elements.get('overview-stock-panel').hidden,true);
+assert.equal(h.elements.get('overview-book-panel').hidden,true);
+h.ui.syncOverviewRoute('overview');assert.equal(h.ui.overviewView(),'ranking','Returning to Overview remembers the chosen panel.');
+h.ui.syncOverviewRoute('cost');assert.equal(h.ui.overviewView(),'book');
+assert.equal(h.elements.get('overview-book-panel').hidden,false);
+assert.equal(h.elements.get('book-trades-panel').hidden,false,'Inner book selection remains independent.');
+h.ui.syncOverviewRoute('chart');assert.equal(h.ui.overviewView(),'stock');
+assert.equal(h.elements.get('overview-stock-panel').chartRange,'1mo','Switching preserves chart controls.');
+h.ui.syncOverviewRoute('how-it-works');assert.equal(h.ui.overviewView(),'stock');
+h.key('overview-stock-tab','End');assert.equal(h.ui.overviewView(),'ranking');
+assert.equal(h.focused(),'overview-ranking-tab');
+const priorOverviewAnimation=h.animations.length;h.ui.syncOverviewRoute('ranking',{animate:true});
+assert.equal(h.animations.length,priorOverviewAnimation,'Hash synchronization does not animate a second time.');
 console.log('Workspace tabs: independent panels, deep links, history routes, keyboard/focus and reduced motion passed.');

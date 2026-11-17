@@ -4,6 +4,7 @@ No SDK import, key read, network call or thread starts on module import.
 The HTTP server explicitly starts/stops the collector in its lifecycle.
 """
 from __future__ import annotations
+from src.data.sqlite_connection import sqlite_session
 
 from datetime import datetime, time as clock_time
 import json
@@ -97,7 +98,7 @@ def store_snapshot(payload: dict, *, database: Path = DATABASE, cache: Path = CA
         append(payload,database,retention_days)
         write_json_atomic(cache,payload)
         return
-    with sqlite3.connect(database,timeout=5) as db:
+    with sqlite_session(database,timeout=5) as db:
         db.execute('PRAGMA journal_mode=WAL')
         db.execute('CREATE TABLE IF NOT EXISTS snapshots (seq INTEGER PRIMARY KEY AUTOINCREMENT, dataset_id TEXT UNIQUE NOT NULL, day TEXT NOT NULL, captured_at TEXT NOT NULL, payload TEXT NOT NULL)')
         db.execute('INSERT OR IGNORE INTO snapshots(dataset_id,day,captured_at,payload) VALUES(?,?,?,?)',
@@ -115,7 +116,7 @@ def history_snapshots(limit: int = 720, *, database: Path = DATABASE) -> list[di
         return []
     count = max(1,min(5000,int(limit)))
     try:
-        with sqlite3.connect(f'file:{database.as_posix()}?mode=ro',uri=True,timeout=2) as db:
+        with sqlite_session(f'file:{database.as_posix()}?mode=ro',uri=True,timeout=2) as db:
             rows = db.execute('SELECT payload FROM snapshots WHERE day = (SELECT MAX(day) FROM snapshots) ORDER BY seq DESC LIMIT ?',(count,)).fetchall()
         return [json.loads(row[0]) for row in reversed(rows)]
     except (sqlite3.Error,ValueError,json.JSONDecodeError):
@@ -125,7 +126,7 @@ def history_snapshots(limit: int = 720, *, database: Path = DATABASE) -> list[di
 def _history_count() -> int:
     if not DATABASE.is_file():return 0
     try:
-        with sqlite3.connect(f'file:{DATABASE.as_posix()}?mode=ro',uri=True,timeout=2) as db:
+        with sqlite_session(f'file:{DATABASE.as_posix()}?mode=ro',uri=True,timeout=2) as db:
             from src.data.observation_store import tables
             names=tables(db)
             return sum(db.execute(f'SELECT COUNT(*) FROM {name}').fetchone()[0] for name in ('snapshots','captures') if name in names)
@@ -137,7 +138,7 @@ def history_inventory(*, database: Path = DATABASE) -> dict:
     result={'snapshot_count':0,'days':[],'days_with_continuous_observations':0,'continuous_snapshot_count':0}
     if not database.is_file():return result
     try:
-        with sqlite3.connect(f'file:{database.as_posix()}?mode=ro',uri=True,timeout=2) as db:
+        with sqlite_session(f'file:{database.as_posix()}?mode=ro',uri=True,timeout=2) as db:
             from src.data.observation_store import tables,compact_inventory
             names=tables(db)
             rows=db.execute("""SELECT day,COUNT(*),MIN(captured_at),MAX(captured_at),

@@ -181,11 +181,13 @@
   $('chart-reset').addEventListener('click',()=>apply([0,source.length-1]));
   const dialog=$('chart-dialog'),navigatorPanel=$('chart-navigator-panel');
   function showSettings(show){
-    $('chart-settings').hidden=!show;$('chart-settings-toggle').textContent='Nâng cao';
+    if(window.lopmDisclosure)window.lopmDisclosure.setExpanded($('chart-settings'),show);else $('chart-settings').hidden=!show;
+    $('chart-settings-toggle').textContent='Nâng cao';
     $('chart-settings-toggle').setAttribute('aria-expanded',String(show));
     $('chart-settings-toggle').setAttribute('aria-label',show?'Thu gọn tùy chọn nâng cao':'Mở tùy chọn nâng cao');
   }
-  $('chart-settings-toggle').addEventListener('click',()=>{showSettings($('chart-settings').hidden);schedule();});
+  $('chart-settings-toggle').addEventListener('click',()=>{showSettings(window.lopmDisclosure?!window.lopmDisclosure.isExpanded($('chart-settings')):$('chart-settings').hidden);schedule();});
+  document.addEventListener('lopm:disclosure-settled',event=>{if(event.detail?.id==='chart-settings')schedule();});
   function closeExpanded(){if(!expanded)return;dialog.close();}
   dialog.addEventListener('close',()=>{
     if(!expanded)return;expanded=false;navigatorPanel.hidden=true;restore.marker.replaceWith(panel);document.body.style.overflow=restore.overflow;

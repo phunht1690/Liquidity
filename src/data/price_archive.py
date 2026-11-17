@@ -3,6 +3,7 @@
 One row per provider candle. Coverage is recorded only for fully requested days
 and complete responses; missing candles are never filled or interpolated.
 """
+from src.data.sqlite_connection import sqlite_session
 from datetime import datetime, timedelta, time as day_time
 from pathlib import Path
 import sqlite3
@@ -36,7 +37,7 @@ class PriceArchive:
         cutoff = (now.date()-timedelta(days=self.retention_days-1)).isoformat()
         bars = [b for b in data.get('bars', []) if b['trading_date'] >= cutoff]
         self.database.parent.mkdir(parents=True, exist_ok=True)
-        with sqlite3.connect(self.database, timeout=5) as db:
+        with sqlite_session(self.database, timeout=5) as db:
             self._create(db)
             db.executemany('''INSERT INTO price_bars VALUES(?,?,?,?,?,?,?,?,?,?)
                 ON CONFLICT(symbol,timeframe,stamp) DO UPDATE SET
@@ -63,7 +64,7 @@ class PriceArchive:
     def coverage(self, symbol, timeframe):
         if not self.database.is_file(): return {}
         try:
-            with sqlite3.connect(f'file:{self.database.as_posix()}?mode=ro', uri=True, timeout=3) as db:
+            with sqlite_session(f'file:{self.database.as_posix()}?mode=ro', uri=True, timeout=3) as db:
                 return {d:{'checked_at':checked,'closed':bool(closed),'bars':count}
                     for d,checked,closed,count in db.execute(
                         'SELECT day,checked_at,closed,bar_count FROM price_days WHERE symbol=? AND timeframe=?', (symbol,timeframe))}
@@ -72,7 +73,7 @@ class PriceArchive:
     def prune(self, now):
         if not self.database.is_file():return
         cutoff=(now.astimezone(VN).date()-timedelta(days=self.retention_days-1)).isoformat()
-        with sqlite3.connect(self.database,timeout=5) as db:
+        with sqlite_session(self.database,timeout=5) as db:
             removed=db.execute('DELETE FROM price_bars WHERE day<?',(cutoff,)).rowcount
             removed+=db.execute('DELETE FROM price_days WHERE day<?',(cutoff,)).rowcount
         if removed:self._inventory=None
@@ -102,7 +103,7 @@ class PriceArchive:
             min(spec['end'].date(),spec['now'].date()),spec['now'],current_ttl=30)
         if missing and not allow_partial: return None
         try:
-            with sqlite3.connect(f'file:{self.database.as_posix()}?mode=ro', uri=True, timeout=3) as db:
+            with sqlite_session(f'file:{self.database.as_posix()}?mode=ro', uri=True, timeout=3) as db:
                 rows = db.execute('''SELECT stamp,day,open,high,low,close,volume,value FROM price_bars
                     WHERE symbol=? AND timeframe=? AND stamp>=? AND stamp<=? ORDER BY stamp''',
                     (spec['symbol'],spec['timeframe'],spec['start'].isoformat(),min(spec['end'],spec['now']).isoformat())).fetchall()
@@ -131,7 +132,7 @@ class PriceArchive:
         if not self.database.is_file():return None
         cutoff=(now.astimezone(VN).date()-timedelta(days=self.retention_days-1)).isoformat()
         try:
-            with sqlite3.connect(f'file:{self.database.as_posix()}?mode=ro',uri=True,timeout=3) as db:
+            with sqlite_session(f'file:{self.database.as_posix()}?mode=ro',uri=True,timeout=3) as db:
                 row=db.execute('SELECT MAX(stamp) FROM price_bars WHERE symbol=? AND day>=? AND stamp<=?',
                                (symbol,cutoff,now.isoformat())).fetchone()
             return event_time(row[0]) if row and row[0] else None
@@ -142,7 +143,7 @@ class PriceArchive:
         result = {'bars':0,'symbols':0,'first_day':None,'last_day':None,'bytes':0,'retention_days':self.retention_days}
         if self.database.is_file():
             try:
-                with sqlite3.connect(f'file:{self.database.as_posix()}?mode=ro', uri=True, timeout=3) as db:
+                with sqlite_session(f'file:{self.database.as_posix()}?mode=ro', uri=True, timeout=3) as db:
                     n,s,first,last = db.execute('SELECT COUNT(*),COUNT(DISTINCT symbol),MIN(day),MAX(day) FROM price_bars').fetchone()
                     result.update(bars=n,symbols=s,first_day=first,last_day=last)
                 result['bytes'] = sum(p.stat().st_size for p in (self.database,self.database.with_name(self.database.name+'-wal')) if p.is_file())

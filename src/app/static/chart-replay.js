@@ -81,7 +81,8 @@
     }
     set('chart-range-note','');return query;
   }
-  function refreshLater(delay=30000){clearTimeout(historyTimer);if(mode==='current'&&priceMode()&&!document.hidden&&currentView()==='overview')historyTimer=setTimeout(()=>loadHistory(true),delay);}
+  const chartVisible=()=>currentView()==='overview'&&(!document.body.dataset.overviewView||document.body.dataset.overviewView==='stock');
+  function refreshLater(delay=30000){clearTimeout(historyTimer);if(mode==='current'&&priceMode()&&!document.hidden&&chartVisible())historyTimer=setTimeout(()=>loadHistory(true),delay);}
   async function loadHistory(passive=false){
     if(mode!=='current'||!priceMode())return;
     const query=historyParams();if(!query)return;
@@ -222,7 +223,7 @@
   $('cache-position').addEventListener('input',()=>{pause();position=Number($('cache-position').value);renderFrames();});$('cache-speed').addEventListener('change',()=>{if(timer!==null){pause();play();}});
   const dayFormat=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}),today=dayFormat.format(new Date());
   $('chart-from').value=dayFormat.format(new Date(Date.now()-31*86400000));$('chart-to').value=today;$('chart-from').max=today;$('chart-to').max=today;
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){pause();clearTimeout(historyTimer);historyTimer=null;}else if(mode==='current'&&priceMode())refreshLater(1000);});
-  window.addEventListener('hashchange',()=>{if(currentView()!=='overview'){pause();clearTimeout(historyTimer);historyTimer=null;}else if(mode==='current'&&priceMode())refreshLater(1000);});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){pause();clearTimeout(historyTimer);historyTimer=null;}else if(chartVisible()&&mode==='current'&&priceMode())refreshLater(1000);});
+  window.addEventListener('hashchange',()=>{if(!chartVisible()){pause();clearTimeout(historyTimer);historyTimer=null;}else if(mode==='current'&&priceMode())refreshLater(1000);});
   window.lopmChart={isReplay:()=>mode==='cache',render:payload=>mode==='cache'?renderFrames():renderLive(payload)};controls();renderLive(state);
 })();

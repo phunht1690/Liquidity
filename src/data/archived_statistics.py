@@ -3,6 +3,7 @@
 OHLC `value` is not totalMatchValue: observed values equal close * volume.
 Only prices and share volume are used here; money turnover comes from summary.
 """
+from src.data.sqlite_connection import sqlite_session
 from hashlib import sha256
 from pathlib import Path
 import json,sqlite3
@@ -17,7 +18,7 @@ def enrich_archived_statistics(product,database=None):
     now=event_time(product.get('runtime',{}).get('now'))
     if not now:return product
     try:
-        with sqlite3.connect(f'file:{path.as_posix()}?mode=ro',uri=True,timeout=2) as db:
+        with sqlite_session(f'file:{path.as_posix()}?mode=ro',uri=True,timeout=2) as db:
             records=db.execute('''SELECT p.symbol,p.day,p.open,p.high,p.low,p.close,p.volume,d.checked_at
                 FROM price_days d JOIN
                     (SELECT symbol,MAX(day) AS day FROM price_days WHERE timeframe='1d' AND closed=1 AND bar_count>0 GROUP BY symbol) latest
