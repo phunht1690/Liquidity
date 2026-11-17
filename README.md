@@ -107,7 +107,9 @@ Chọn tab **Cổ phiếu**, **Sổ lệnh** hoặc **Bảng giá** để xem t�
 
 Tab **Cổ phiếu** ưu tiên nhận diện mã, thống kê phiên và biểu đồ. Bấm tỷ lệ khối lượng để xem lượng đem so sánh và trung bình 20 phiên; Esc hoặc bấm ra ngoài để đóng. Thẻ **Khối ngoại** nằm dưới biểu đồ, ghi phiên riêng và mở chi tiết mua, bán, room ngoại còn lại. Cách tính và nguồn thống kê của mã nằm trong **Dữ liệu & cách dùng → Hướng dẫn → Ví dụ**. Bốn chỉ tiêu chênh mua–bán, độ dày, bên chờ nhiều hơn và mức đáp ứng quy mô nằm ở đầu tab **Sổ lệnh**.
 
-Tóm tắt thanh khoản toàn phạm vi và nút **Xuất tóm tắt HTML** nằm ở đầu tab **Bảng giá**, phía trên lựa chọn cổ phiếu/theo ngành. Mỗi thẻ giữ mẫu số riêng theo số mã đủ dữ liệu. Bấm thẻ để lọc bảng; mốc sổ và quy mô ghi ngay trong khung tóm tắt.
+Tab **Sổ lệnh** đặt số tiền kiểm tra cạnh bảng ước tính mua/bán trên màn hình lớn. Mở **So sánh theo quy mô** để xem biểu đồ chênh giá theo các mức tiền; biểu đồ dùng kết quả mới nhất khi mở lại.
+
+Tab **Bảng giá** đặt lựa chọn **Bảng giá / Theo ngành** và nút **Xuất tóm tắt HTML** ngay cạnh tiêu đề. Hàng tóm tắt thanh khoản bên dưới giữ mẫu số riêng theo số mã đủ dữ liệu. Bấm chỉ số để lọc bảng; mốc sổ và quy mô nằm ngay dưới các chỉ số. Thông tin phiên và độ phủ của đường giá nhỏ nằm ở **Dữ liệu đường giá** dưới bảng.
 
 1. Chọn **Phạm vi → Ngành → Cổ phiếu**. Ngày và thời điểm giá/sổ hiển thị riêng.
 2. Trong **Sổ lệnh & quy mô**, kéo thanh, nhập số tiền hoặc chọn mức nhanh để kiểm tra. Kết quả tự tính lại trên ảnh sổ đang xem.

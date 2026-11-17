@@ -99,6 +99,9 @@ const rows=Array.from({length:60},(_,i)=>({timestamp:new Date(Date.parse('2026-1
   assert.equal(live.get('chart-ma50').disabled,true);assert.match(live.get('ma50-control').title,/đang có 46/);
   assert.match(live.get('chart-data-status').textContent,/Một phần khoảng chọn/);
   assert.ok(live.get('chart-source-fields').children.length>0);assert.ok(!live.get('history-caption').textContent.includes('FPT'));
+  assert.ok(!live.get('history-caption').textContent.includes('46'),'The heading shows the range and interval without repeating sample counts.');
+  const candleCount=live.get('chart-source-fields').children.find(row=>row.children[0].textContent==='Số nến');
+  assert.equal(candleCount.children[1].textContent,46,'The actual sample count remains available with the source details.');
   const count=requests.length;live.get('chart-settings-toggle').fire('click');live.get('chart-expand').fire('click');live.get('chart-dialog').close();live.flush();
   assert.equal(requests.length,count,'Opening settings/fullscreen does not fetch data.');
   live.get('chart-range').value='custom';live.get('chart-range').fire('change');await settle();

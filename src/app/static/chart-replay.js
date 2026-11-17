@@ -22,7 +22,7 @@
     const price=priceMode(),replay=mode==='cache';
     $('chart-type-control').hidden=!price;$('chart-range-control').hidden=!price||replay;$('chart-timeframe-control').hidden=!price||replay;
     $('snapshot-window-control').hidden=price||replay;$('chart-custom-range').hidden=!price||replay||$('chart-range').value!=='custom';
-    $('liquidity-day-control').hidden=price||replay;set('chart-title',price?'Diễn biến giá':'Chênh giá & lượng chờ');
+    $('liquidity-day-control').hidden=price||replay;set('chart-title-label',price?'Diễn biến giá':'Chênh giá & lượng chờ');
     $('price-series-options').hidden=!price;$('liquidity-series-options').hidden=price;
     $('ma20-control').hidden=replay;$('ma50-control').hidden=replay;$('chart-type').querySelector('option[value=candles]').disabled=replay;
   }
@@ -60,12 +60,13 @@
     const view=viewport.prepare(points,{key:['history',symbol,history.range,history.timeframe,history.requested_from,history.requested_to].join('|'),bars:true,metric:'price',onChange:redraw});
     engine.price(view.points,{...settings(true,points),symbol,timeframe:history.timeframe,masterPoints:points});window.lopmWidgets?.chartIdentity(points,symbol,selected?.change_percent,selected?.price_asof_date||selected?.trading_date);animatePlot(symbol,['history',symbol,history.range,history.timeframe,history.requested_from,history.requested_to].join('|'));
     set('chart-mode-badge',history.local_archive?'SSI · Kho nến':'SSI · Nến giá');
-    set('history-caption',`${rangeLabel} · ${unit}/nến · ${points.length} nến`);
+    set('history-caption',`${rangeLabel} · ${unit}/nến`);
     const from=points[0]?.timestamp,to=points.at(-1)?.timestamp;
     const periodTime=history.timeframe==='1d'?dayLabel:dateTime;
     chartInfo(points.length?`${history.refreshing?'Đang đồng bộ · lần trước':'Đồng bộ'} ${compactStamp(history.updated_at)}${history.complete_range===false?' · Một phần khoảng chọn':''}`:'_',[
       ['Nguồn',history.local_archive?'Nến SSI đã lưu trên máy':'API nến SSI'],
       ['Khoảng đã tải',points.length?`${periodTime(from)} → ${periodTime(to)}`:'_'],
+      ['Số nến',fmt(points.length,0)],
       ['Nến cuối',to?periodTime(to):'_'],['Lần đồng bộ',dateTime(history.updated_at)],
       ['BQ phiên SSI',`${points.filter(p=>valid(p.avg_match_price_vnd)).length}/${points.length} nến có mốc đã ghi`]
     ],history.complete_range===false?'Mới có một phần nến trong khoảng chọn; các khoảng thiếu được giữ trống.':'Giá và khối lượng từng nến do SSI cung cấp. BQ phiên chỉ vẽ tại các mốc đã thu; khoảng thiếu mẫu được giữ trống.');

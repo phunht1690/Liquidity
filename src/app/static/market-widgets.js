@@ -5,6 +5,8 @@
     const pct=engine.referenceChange(points,change,changeDay);
     set('chart-symbol-label',symbol||'_');set('chart-change-label',valid(pct)?signed(pct)+'%':'');
     $('chart-change-label').style.color=engine.trendColor(pct);
+    const label=valid(pct)?`${signed(pct)}% so với giá tham chiếu của điểm cuối biểu đồ`:'';
+    $('chart-change-label').title=label;$('chart-change-label').setAttribute('aria-label',label);
   }
   function depth(payload){
     const r=payload?.selected;
